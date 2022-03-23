@@ -26,35 +26,21 @@ with open("./bytecode.txt", "r") as file:
 with open("./abi.txt", "r") as file:
     abi = json.load(file)
 
-Greeter = web3.eth.contract(abi=abi, bytecode=bytecode)
+Carte = web3.eth.contract(abi=abi, bytecode=bytecode)
 
 # if deploying to rinkeby, remove gasPrice: 0
 # deploy
-tx = Greeter.constructor(
-        "Hello world"
+tx = Carte.constructor(
+        "https://random.URI",
+        3,
+        "0xF90aCf91BdAB539aAC3093E5C5b207b562354401"
     ).buildTransaction({
         'nonce': web3.eth.getTransactionCount(deployer_address),
-        'gasPrice': 0
-        })
+        'gasPrice': 0,
+        'gas': 5000000
+    })
 signed_tx  = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
 send_tx    = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
 receipt_tx = web3.eth.wait_for_transaction_receipt(send_tx)
 
-
-greeter = web3.eth.contract(address=receipt_tx.contractAddress, abi=abi)
-
-# see what is in greeting in the Smart Contract (lign 5)
-print(greeter.functions.greet().call())
-
-# change greeting in the SC
-tx = greeter.functions.setGreeting(
-        'Bonjour monde'
-    ).buildTransaction({
-        'nonce': web3.eth.getTransactionCount(deployer_address),
-        'gasPrice': 0
-        })
-signed_tx  = web3.eth.account.sign_transaction(tx, PRIVATE_KEY)
-send_tx    = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-receipt_tx = web3.eth.wait_for_transaction_receipt(send_tx)
-
-print(greeter.functions.greet().call())
+print(receipt_tx.contractAddress)
